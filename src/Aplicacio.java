@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -9,16 +10,19 @@ public class Aplicacio {
     private final String DB_usuari ="root";
     private final String DB_contrasenya ="";
     
+    private Vehicles v;
+    
     public Aplicacio(){
         in = new Scanner(System.in);
+        v = new Vehicles(DB_nom,DB_usuari,DB_contrasenya);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException{
         Aplicacio app = new Aplicacio();
         app.menuPrincipal("Cognom1, Nom1");
     }
     
-    public void menuPrincipal(String nom){
+    public void menuPrincipal(String nom) throws SQLException{
         int opcio = 0;
         nomOperari = nom;
         do {
@@ -38,15 +42,18 @@ public class Aplicacio {
         } while (opcio != 0);
     }
     
-    private int opcionsPrincipal(){
+    private int opcionsPrincipal() throws SQLException{
         int opcio;
         try{
             opcio = in.nextInt();
+            in.nextLine();//Netejem el buffer
+            //opcio = 1;
             switch (opcio) {
                 case 0:
                     break;
                 case 1:
                     menuVehicles();
+                    in.nextLine();
                     break;
                 case 2:
 
@@ -68,11 +75,14 @@ public class Aplicacio {
         }
         return opcio;
     }
-    private void menuVehicles(){
+    private void menuVehicles() throws SQLException{
+        System.out.println("\n");
         System.out.println("Vehicles");
         System.out.println("--------");
         System.out.print("Matricula> ");
-        in.nextLine();
+        String matricula = "111222X";
+        //in.nextLine();
+        v.mostraVehicle(matricula);
         
     }
     

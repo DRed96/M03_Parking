@@ -1,6 +1,7 @@
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Connexio {
@@ -11,7 +12,7 @@ public class Connexio {
     //final String DB_taula       = "usuaris";              // Taula sobre la que realitzarem les sentències.
     public Connection DB_connexio;
     
-    private PreparedStatement PS_afegirAssignatura;
+    private PreparedStatement PS_infoVehicle;
      
     
     
@@ -32,7 +33,13 @@ public class Connexio {
             // Preparem les consultes a la base de dades.
             // Cada interrogant representa un valor que haurà de ser concretat
             // abans de l'execució.
-            PS_afegirAssignatura     = DB_connexio.prepareStatement ("SELECT * FROM estudiant");
+                PS_infoVehicle     = DB_connexio.prepareStatement (
+                        "SELECT * "+
+                        "FROM vehicle "+
+                        "LEFT JOIN propietari "+
+                        "ON vehicle.dni_propietari = propietari.dni "+
+                        "WHERE matricula=?"
+                );
 //            PS_afegirEstudiants     = conn.DB_connexio.prepareStatement ("INSERT INTO estudiant (nom,dni,adreca) VALUES (?, ?, ?)");
 //            PS_afegirProfessor     = conn.DB_connexio.prepareStatement ("INSERT INTO profesor (nom,departament) VALUES (?, ?)");
 //            PS_assignarProfessor    = conn.DB_connexio.prepareStatement ("INSERT INTO curs (any,nom_assignatura,nom_professor) VALUES (?, ?, ?)");
@@ -54,9 +61,25 @@ public class Connexio {
         
     }
     
-    public void consultaVehicle(){
-        
+    public ResultSet consultaInfoVehicle(String matricula) throws SQLException{
+        PS_infoVehicle.setString(1, matricula);
+        ResultSet rs = PS_infoVehicle.executeQuery();   
+        return rs;
     }
+//    
+//    public void mostraEstudiants() throws SQLException{
+//        ResultSet rs = PS_mostraEstudiants.executeQuery();
+//        System.out.println();
+//        System.out.println("---------------------------------------");
+//        if (rs.next()) {
+//            do {
+//            System.out.println("Nom : "+rs.getString("nom")+", DNI : "+rs.getString("dni")+", Adreça : "+rs.getString("adreca"));
+//            } while(rs.next());
+//        } else {
+//            System.out.println("No s'han trobat estudiants");
+//        }
+//        System.out.println("---------------------------------------");
+//    }
     //---------------------------------------------------------------------------
     // FUNCIONS Base de Dades ---------------------------------------------------
     //---------------------------------------------------------------------------
