@@ -6,6 +6,7 @@ import java.sql.SQLException;
 public class Vehicles {
     private String mat;
     public Vehicles(){
+    
     }
     
     
@@ -21,29 +22,25 @@ public class Vehicles {
     }
     
     private void mostraInfo() throws Exception{
-        ResultSet rs = conn.consultaInfoVehicle(mat);
-        if(rs.next()){
-            System.out.println(
-                    rs.getString("matricula") + " - " +
-                    rs.getString("marca") + ", " +
-                    rs.getString("model") + " - "+
-                    rs.getString("nom") + ", "+
-                    rs.getString("cognoms") + " - "+
-                    rs.getString("telefon")+ "\n"
-            );         
-        }
-        else{
-            throw new Exception("No s'ha trobat el vehicle amb la matricula"+mat);
-        }
+//        ResultSet rs = conn.consultaInfoVehicle(mat);
+//        if(rs.next()){
+//            System.out.println(
+//                    rs.getString("matricula") + " - " +
+//                    rs.getString("marca") + ", " +
+//                    rs.getString("model") + " - "+
+//                    rs.getString("nom") + ", "+
+//                    rs.getString("cognoms") + " - "+
+//                    rs.getString("telefon")+ "\n"
+//            );         
+//        }
+//        else{
+//            throw new Exception("No s'ha trobat el vehicle amb la matricula"+mat);
+//        }
     }
     
     private void mostraEntrades() throws Exception{
         //Aquesta consulta és només d'una taula així que la fem manualment
-        ResultSet rs = conn.querySQL(
-                "SELECT * "
-                + "FROM entrades "
-                + "WHERE matricula = " + mat
-        );
+//        s
         System.out.println("Historial d'entrades");
         System.out.println("--------------------");
         System.out.println("ID | Entrada | Sortida | Dies | Motiu");

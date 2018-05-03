@@ -14,7 +14,7 @@ public class Aplicacio {
     
     public Aplicacio(){
         in = new Scanner(System.in);
-        v = new Vehicles(DB_nom,DB_usuari,DB_contrasenya);
+        v = new Vehicles();
     }
 
     public static void main(String[] args) throws SQLException{
