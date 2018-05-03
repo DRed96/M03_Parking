@@ -45,9 +45,9 @@ public class Aplicacio {
     private int opcionsPrincipal() throws SQLException{
         int opcio;
         try{
-            opcio = in.nextInt();
-            in.nextLine();//Netejem el buffer
-            //opcio = 1;
+            //opcio = in.nextInt();
+            //in.nextLine();//Netejem el buffer
+            opcio = 1;
             switch (opcio) {
                 case 0:
                     break;
@@ -81,9 +81,8 @@ public class Aplicacio {
         System.out.println("--------");
         System.out.print("Matricula> ");
         String matricula = "111222X";
-        //in.nextLine();
         v.mostraVehicle(matricula);
-        
+        //in.nextLine();   
     }
     
     private void menuEntrades(){

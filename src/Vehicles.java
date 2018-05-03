@@ -4,33 +4,49 @@ import java.sql.SQLException;
 
 /* Pots modificar la matrícula d'un vehicle ?*/
 public class Vehicles {
-    private final Connexio conn;
-    public Vehicles(String dbNom, String dbUsu, String dbPass ){
-        conn = new Connexio(dbNom,dbUsu,dbPass);
+    private String mat;
+    public Vehicles(){
     }
     
+    
     public void mostraVehicle(String matricula) throws SQLException{
-        ResultSet rs = conn.consultaInfoVehicle(matricula);
-        
+        mat = matricula;
+        try{
+            mostraInfo();
+            mostraEntrades();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void mostraInfo() throws Exception{
+        ResultSet rs = conn.consultaInfoVehicle(mat);
         if(rs.next()){
-            System.out.println("Historial d'entrades");
-            System.out.println("--------------------");
-            System.out.println("ID | Entrada | Sortida | Dies | Motiu");
             System.out.println(
                     rs.getString("matricula") + " - " +
                     rs.getString("marca") + ", " +
                     rs.getString("model") + " - "+
                     rs.getString("nom") + ", "+
                     rs.getString("cognoms") + " - "+
-                    rs.getString("telefon")
-            );
+                    rs.getString("telefon")+ "\n"
+            );         
         }
         else{
-            System.out.println("No s'ha trobat el vehicle");
+            throw new Exception("No s'ha trobat el vehicle amb la matricula"+mat);
         }
     }
     
-    private void getInfoPropietari(){
+    private void mostraEntrades() throws Exception{
+        //Aquesta consulta és només d'una taula així que la fem manualment
+        ResultSet rs = conn.querySQL(
+                "SELECT * "
+                + "FROM entrades "
+                + "WHERE matricula = " + mat
+        );
+        System.out.println("Historial d'entrades");
+        System.out.println("--------------------");
+        System.out.println("ID | Entrada | Sortida | Dies | Motiu");
         
     }
     
