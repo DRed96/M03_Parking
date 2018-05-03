@@ -1,17 +1,16 @@
-º
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /* Pots modificar la matrícula d'un vehicle ?*/
-public class Vehicles {
-    private String mat;
-    public Vehicles(){
+public class Propietaris {
+    private char dni;
+        public Propietaris(){
     
     }
     
     
-    public void mostraVehicle(String matricula) throws SQLException{
-        mat = matricula;
+    public void mostraPropietaris(char identificacio) throws SQLException{
+        dni = identificacio;
         try{
             mostraInfo();
             mostraEntrades();
@@ -22,19 +21,18 @@ public class Vehicles {
     }
     
     private void mostraInfo() throws Exception{
-//        ResultSet rs = conn.consultaInfoVehicle(mat);
+//        ResultSet rs = conn.consultaInfoPropietari(dni);
 //        if(rs.next()){
-//            System.out.println(
-//                    rs.getString("matricula") + " - " +
-//                    rs.getString("marca") + ", " +
-//                    rs.getString("model") + " - "+
-//                    rs.getString("nom") + ", "+
+//            System.out.println(dni") + " - " +
+//                    rs.getString("nom") + ", " +
+//                    rs.getString("telefon") + " - "+
+//                    rs.getString("carrer") + ", "+
 //                    rs.getString("cognoms") + " - "+
 //                    rs.getString("telefon")+ "\n"
 //            );         
 //        }
 //        else{
-//            throw new Exception("No s'ha trobat el vehicle amb la matricula"+mat);
+//            throw new Exception("No s'ha trobat cap propietari amb el dni"+dni);
 //        }
     }
     
@@ -43,7 +41,7 @@ public class Vehicles {
 //        s
         System.out.println("Historial d'entrades");
         System.out.println("--------------------");
-        System.out.println("ID | Entrada | Sortida | Dies | Motiu");
+        System.out.println("ID | Entrada | Sortida | Dies | Motiu | Matricula | Vehicle");
         
     }
     
