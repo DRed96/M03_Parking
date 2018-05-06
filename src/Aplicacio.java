@@ -16,6 +16,7 @@ public class Aplicacio {
     private final BaseDades DB;
     private final Consultes C;
     private final Propietaris P;
+    private final Entrades E;
     
     public Aplicacio()throws SQLException{
         in = new Scanner(System.in);
@@ -24,12 +25,12 @@ public class Aplicacio {
         C = new Consultes(DB);
         V = new Vehicles(C);
         P = new Propietaris(C);
+        E = new Entrades(C);
     }
 
     public static void main(String[] args) throws SQLException{
         Aplicacio app = new Aplicacio();
         app.menuPrincipal("Cognom1, Nom1");
-        
     }
     
     //Demana a l'usuari una pregunta de si o no fins que introdueixi un resultat vàlid
@@ -86,7 +87,7 @@ public class Aplicacio {
                     demanarPropietari();
                     break;
                 case 3:
-                    
+                    menuEntrades();
                     break;
                 case 4:
                     menuLlistat();
@@ -263,7 +264,7 @@ public class Aplicacio {
     }
     
     
-    private int opcionsEntrades(){
+    private int opcionsEntrades() throws SQLException{
         int opcio;
         try{
             opcio = in.nextInt();
@@ -271,6 +272,7 @@ public class Aplicacio {
                 case 0:
                     break;
                 case 1:
+                    novaEntrada();
                     break;
                 case 2:
 
@@ -291,6 +293,26 @@ public class Aplicacio {
             opcio = -1;
         }
         return opcio;
+    }
+    
+    private void novaEntrada() throws SQLException{
+        String id;
+        System.out.println("\nIntroduir id : ");
+        id = in.nextLine();
+        System.out.println("\nIntroduir plaça");
+        String plaça = in.nextLine();
+        System.out.println("\nIntroduir data entrada");
+        String dataEntrada = in.nextLine();
+        System.out.println("\nIntroduir matricula");
+        String matricula = in.nextLine();
+        System.out.println("\nIntroduir model vehicle");
+        String vehicle = in.nextLine();
+        System.out.println("\nIntroduir Propietari");
+        String propietari = in.nextLine();
+        System.out.println("\nTelefon propietari");
+        String telefon = in.nextLine();
+        
+        E.insertarEntrada(id,plaça,dataEntrada,matricula,vehicle,propietari,telefon);
     }
     
     private void menuLlistat() throws SQLException{
