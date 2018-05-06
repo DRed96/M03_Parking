@@ -74,7 +74,7 @@ public class Aplicacio {
         try{
             //opcio = in.nextInt();
             //in.nextLine();//Netejem el buffer
-            opcio = 2;
+            opcio = 4;
             switch (opcio) {
                 case 0:
                     DB.DBDesconnecta();
@@ -86,10 +86,10 @@ public class Aplicacio {
                     demanarPropietari();
                     break;
                 case 3:
-
+                    
                     break;
                 case 4:
-
+                    menuLlistat();
                     break;
                 default:
                     System.out.println("\nS'ha de seleccionar una opció correcta del menú.");
@@ -116,7 +116,7 @@ public class Aplicacio {
         System.out.println("Model: ");
         ret[1] = in.nextLine();
         System.out.println("DNI propietari: ");
-        ret[2] = "12345678P";//ret[2] = in.nextLine(); 
+        ret[2] = in.nextLine(); 
         
         return ret;
     }
@@ -165,7 +165,7 @@ public class Aplicacio {
         }
     }
     
-    private boolean demanarInfoPropietari(String dni) throws SQLException{
+    private boolean consultarInfoPropietari(String dni) throws SQLException{
         ResultSet rs = P.consultaInfo(dni);
         if(rs.next()){
             System.out.println(
@@ -228,7 +228,7 @@ public class Aplicacio {
         String dni = "12345678P";
         
         String [] infoP;
-        if(demanarInfoPropietari(dni)){
+        if(consultarInfoPropietari(dni)){
             P.consultaEntrades(dni);
             if(preguntaSN("Vols modificar l'informació del propietari? (s/n)")){
                 infoP = demanarCampsPropietari();
@@ -257,6 +257,8 @@ public class Aplicacio {
             System.out.println("\n\n\n 0 – Enrere");
             
             opcio = opcionsEntrades();
+            System.out.println("\nPressiona ENTER per a continuar");
+            in.nextLine();
         } while (opcio != 0);
     }
     
@@ -291,9 +293,8 @@ public class Aplicacio {
         return opcio;
     }
     
-    private void menuLlistat(){
+    private void menuLlistat() throws SQLException{
         int opcio = 0;
-        Scanner dades = new Scanner(System.in);
         do {
             
             System.out.println("\nMenú de llistat");
@@ -307,25 +308,35 @@ public class Aplicacio {
             System.out.println("\n\n\n 0 – Enrere");
             
             opcio = opcionsLlistat();
+            System.out.println("\nPressiona ENTER per a continuar");
+            in.nextLine();
         } while (opcio != 0);
     }
     
     
-    private int opcionsLlistat(){
+    private int opcionsLlistat()throws SQLException{
         int opcio;
         try{
-            opcio = in.nextInt();
+            //opcio = 1;
+            opcio = in.nextInt();in.nextLine();
+            System.out.print("\n");
+            String data;
             switch (opcio) {
                 case 0:
+                    
                     break;
                 case 1:
-
+                    C.vehiclesPendents();
                     break;
                 case 2:
-
+                    System.out.print("Vehicles entrants en data> ");
+                    data = in.nextLine();
+                    C.consultaVehiclesEnData(true,data);
                     break;
                 case 3:
-
+                    System.out.print("Vehicles sortints en data> ");
+                    data = in.nextLine();
+                    C.consultaVehiclesEnData(false,data);
                     break;
                 case 4:
 

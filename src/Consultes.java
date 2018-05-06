@@ -21,8 +21,10 @@ public class Consultes {
     private PreparedStatement PS_diferenciaDates;
     private PreparedStatement PS_infoVehicle;
     private PreparedStatement PS_entradesVehicle;
-    private PreparedStatement PS_infoPropietaris;
     private PreparedStatement PS_entradesPropietaris;
+    private PreparedStatement PS_vehiclesPendents;
+    private PreparedStatement PS_vehiclesDateEN;
+    private PreparedStatement PS_vehiclesDateSO;
     
     public Consultes(BaseDades _DB)throws SQLException{
         DB = _DB;
@@ -51,7 +53,29 @@ public class Consultes {
                                                     + "ON v.dni_propietari = ? "
                                                     + "WHERE e.dni_propietario = ?");
         
+        PS_vehiclesPendents = DB.preparaEnunciat("SELECT e.id,e.planta,e.plaça, e.data_entrada,e.matricula, v.marca,v.model,p.cognoms,p.nom,p.telefon "
+                                                + "FROM entrada e "
+                                                + "LEFT JOIN propietari p "
+                                                + "ON p.dni = e.dni_propietario "
+                                                + "LEFT JOIN vehicle v "
+                                                + "ON v.matricula = e.matricula "
+                                                + "WHERE e.motiu = 0");
         
+        PS_vehiclesDateEN = DB.preparaEnunciat("SELECT e.id,e.matricula,v.marca,v.model,p.cognoms,p.nom,p.telefon "
+                                                + "FROM entrada e "
+                                                + "LEFT JOIN propietari p "
+                                                + "ON p.dni = e.dni_propietario "
+                                                + "LEFT JOIN vehicle v "
+                                                + "ON v.matricula = e.matricula "
+                                                + "WHERE data_entrada = ?");
+        
+        PS_vehiclesDateSO = DB.preparaEnunciat("SELECT e.id,e.matricula,v.marca,v.model,p.cognoms,p.nom,p.telefon "
+                                                + "FROM entrada e "
+                                                + "LEFT JOIN propietari p "
+                                                + "ON p.dni = e.dni_propietario "
+                                                + "LEFT JOIN vehicle v "
+                                                + "ON v.matricula = e.matricula "
+                                                + "WHERE data_sortida = ?");
     }
     
     public boolean consultaInfoVehicle(String matricula) throws SQLException{
@@ -145,6 +169,62 @@ public class Consultes {
         }
         return ret;
     }
+    
+    public void vehiclesPendents()throws SQLException{
+        ResultSet rs = PS_vehiclesPendents.executeQuery();
+        String dies;
+        Date avui;
+        System.out.println("Vehicles pendents de retirada");
+        System.out.println("--------------------");
+        System.out.println("ID | Plaça | Entrada | Dies | Matrícula | Vehicle | Propietari | Telèfon");
+        if(rs.next()){
+            avui = new Date(System.currentTimeMillis());
+            dies = diferenciaDates(rs.getString("data_entrada"),avui.toString());
+            do{
+                System.out.println(
+                    rs.getString("e.id") + " | " +
+                    rs.getString("e.planta") + "-" + rs.getString("e.plaça")+ " | " +
+                    rs.getString("e.data_entrada") + " | " +
+                    dies + " | " +
+                    rs.getString("e.matricula") + " | " +
+                    rs.getString("v.marca") + ", " + rs.getString("v.model") + " | " +
+                    rs.getString("p.cognoms") + ", " + rs.getString("p.nom") + " | " +
+                    rs.getString("p.telefon")
+                );
+            }while(rs.next());
+        }
+    }
+    
+    public void consultaVehiclesEnData(boolean entrada,String data) throws SQLException{
+        ResultSet rs;
+        String tmp;
+        if(entrada){
+            tmp = "entrants";
+            PS_vehiclesDateEN.setString(1,data);
+            rs = this.PS_vehiclesDateEN.executeQuery();
+        }
+        else{
+            tmp = "sortints";
+            PS_vehiclesDateSO.setString(1,data);
+            rs = this.PS_vehiclesDateSO.executeQuery();
+        }
+        if(rs.next()){
+            System.out.println("Vehicles "+tmp);
+            System.out.println("--------------------");
+            System.out.println("ID | Matrícula | Vehicle | Propietari | Telèfon");
+            do{
+                System.out.println(
+                    rs.getString("e.id") + " | " +
+                    rs.getString("e.matricula") + " | " +
+                    rs.getString("v.marca") + ", " + rs.getString("v.model") + " | " +
+                    rs.getString("p.cognoms") + ", " + rs.getString("p.nom") + " | " +
+                    rs.getString("p.telefon")
+                );
+                
+            }while(rs.next());
+        }
+    }
+    
     /*  Aquest mètode només crida a la BBDD, l'he posat aquí perquè molts objectes
         havien d'incloure l'objecte BBDD només per poder fer consultes.
         Així incloim només un objecte*/
@@ -165,5 +245,4 @@ public class Consultes {
             throw new SQLException("Error amb la diferència de dates");
         return rs.getString(1);
     }
-    
 }
