@@ -46,3 +46,4 @@ public class Entrades {
         return new Entrades(pid, pplaça, pdataEntrada, pmatricula, pvehicle, ppropietari, ptelefon);
         
     }
+}
