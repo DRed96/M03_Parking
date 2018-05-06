@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -48,9 +49,9 @@ public class Entrades {
     }
 }
 
-public static ConsultarPlaça(int planta, int plaça) throws SQLException{
+private boolean ConsultaPlaça(String planta, String  plaça) throws SQLException{
         ResultSet rs = P.mostraInfo("planta" + "-" + "plaça");
- 
+        if(rs.next()){
             System.out.println(
                     "Informacio propietari" + "\n"
                     rs.getString("dni") + " \n " +
@@ -64,11 +65,15 @@ public static ConsultarPlaça(int planta, int plaça) throws SQLException{
                     rs.getString("model") + " \n "+
                     rs.getString("cognoms") + ", " +
                     rs.getString("nom") + " \n "+
-                    rs.getString("telefon") + "\n");
-           
+                    rs.getString("telefon") + "\n"      
+        );
+            return true;
+        }
+        else
+            return false;
     }
 
- private String[] demanarCampsPropietari(){
+ private String[] Modificar entrada(){
         String[] ret = new String [5];
         
         System.out.println("Introdueix el nom del propietari: ");
