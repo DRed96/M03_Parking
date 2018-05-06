@@ -97,6 +97,8 @@ public class Consultes {
         }
     }
     
+    /* Ens exposa les dades dels vehicles que hi ha o han estat al parking*/
+    
     public void consultaEntradesVehicle(String matricula) throws SQLException{
         PS_entradesVehicle.setString(1,matricula);
         ResultSet rs = PS_entradesVehicle.executeQuery();
@@ -121,7 +123,7 @@ public class Consultes {
         }
     }
  
-    
+    /* Ens exposa les dades del propietari del dni dessitjat */
     public void consultarEntradesPropietari(String dni) throws SQLException{
         PS_entradesPropietaris.setString(1, dni);
         PS_entradesPropietaris.setString(2, dni);
@@ -169,7 +171,7 @@ public class Consultes {
         }
         return ret;
     }
-    
+    /* Ens torna les dades dels vehicles que hi ha al parking */
     public void vehiclesPendents()throws SQLException{
         ResultSet rs = PS_vehiclesPendents.executeQuery();
         String dies;
@@ -194,7 +196,7 @@ public class Consultes {
             }while(rs.next());
         }
     }
-    
+    /* Ens torna els vehicles que han entrat a la data desitjada amb la seva informacio */
     public void consultaVehiclesEnData(boolean entrada,String data) throws SQLException{
         ResultSet rs;
         String tmp;
