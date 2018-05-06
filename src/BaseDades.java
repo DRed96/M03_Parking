@@ -1,5 +1,6 @@
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,13 +26,13 @@ public class BaseDades {
     //---------------------------------------------------------------------------
     // FUNCIONS Consultes ---------------------------------------------------
     //---------------------------------------------------------------------------
-    public void preparaEnunciat(String statement) throws SQLException{
-        DB_connexio.prepareStatement(statement);
+    public PreparedStatement preparaEnunciat(String statement) throws SQLException{
+        return DB_connexio.prepareStatement(statement);
     }
     /*
      * Permet fer consultes que retornin files a la BBDD
      */
-    public ResultSet querySQL(String consulta) throws SQLException{
+    public ResultSet consultaSQL(String consulta) throws SQLException{
         Statement st = DB_connexio.createStatement();
         return st.executeQuery(consulta);
     }
@@ -58,16 +59,9 @@ public class BaseDades {
     }
     
     // Tancament de la connexió.
-    public void DBDesconnecta()
+    public void DBDesconnecta() throws SQLException
     {
-        // Agafem aquesta excepció perquè el programa pot funcionar encara que 
-        // aquest mètode tiri una excepció
-        try{
-           if (DB_connexio!=null)   // Si existeix la connexió...
-             DB_connexio.close (); // ...la tanquem. 
-        }
-        catch (SQLException e){
-            System.out.println(e.getMessage());
-        }
+        if (DB_connexio!=null)   // Si existeix la connexió...
+            DB_connexio.close (); // ...la tanquem. 
     }
 }

@@ -1,29 +1,57 @@
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Aplicacio {
-    private Scanner in; 
+    private final Scanner in; 
     private String nomOperari;
     
     private final String DB_nom ="m03_parking";
     private final String DB_usuari ="root";
     private final String DB_contrasenya ="";
     
-    private Vehicles v;
+    //Objectes
+    private final Vehicles V;
+    private final BaseDades DB;
+    private final Consultes C;
+    private final Propietaris P;
     
-    public Aplicacio(){
+    public Aplicacio()throws SQLException{
         in = new Scanner(System.in);
-        v = new Vehicles();
+        DB = new BaseDades(DB_nom,DB_usuari,DB_contrasenya);
+        DB.DBConnecta_ModeModern();
+        C = new Consultes(DB);
+        V = new Vehicles(C);
+        P = new Propietaris(C);
     }
 
     public static void main(String[] args) throws SQLException{
         Aplicacio app = new Aplicacio();
         app.menuPrincipal("Cognom1, Nom1");
+        
+    }
+    
+    //Demana a l'usuari una pregunta de si o no fins que introdueixi un resultat vàlid
+    private boolean preguntaSN(String enunciat){
+        System.out.println(enunciat);
+        boolean resultat = false;
+        do{
+            System.out.println("Introdueix una opció (s/n)");
+            String op = in.nextLine();
+            
+            if(op.contains("s") || op.contains("S"))
+                resultat = true;
+            if(op.contains("n") || op.contains("N"))
+                resultat = !resultat;
+            //Comprovem que l'usuari no pugui introduïr N i S al mateix temps
+        }while(resultat == false);
+        
+        return resultat;
     }
     
     public void menuPrincipal(String nom) throws SQLException{
-        int opcio = 0;
+        int opcio;
         nomOperari = nom;
         do {
             System.out.println("Menú principal");
@@ -38,7 +66,6 @@ public class Aplicacio {
             System.out.println("\n\n\n 0. Tancar sessió");
             
             opcio = opcionsPrincipal();
-
         } while (opcio != 0);
     }
     
@@ -47,16 +74,16 @@ public class Aplicacio {
         try{
             //opcio = in.nextInt();
             //in.nextLine();//Netejem el buffer
-            opcio = 1;
+            opcio = 2;
             switch (opcio) {
                 case 0:
+                    DB.DBDesconnecta();
                     break;
                 case 1:
-                    menuVehicles();
-                    in.nextLine();
+                    demanarVehicle();
                     break;
                 case 2:
-
+                    demanarPropietari();
                     break;
                 case 3:
 
@@ -73,23 +100,152 @@ public class Aplicacio {
             System.out.println(e.getMessage());
             opcio = -1;
         }
+        
+        in.nextLine();
         return opcio;
     }
-    private void menuVehicles() throws SQLException{
+    
+    /*  Retorna un array amb l'informació passada
+        0 - Marca; 1 - Model; 2 - DNI;
+    */
+    private String[] demanarCampsVehicle(){
+        String[] ret = new String [3];
+        
+        System.out.println("Introdueix la marca del vehicle: ");
+        ret[0] = in.nextLine();
+        System.out.println("Model: ");
+        ret[1] = in.nextLine();
+        System.out.println("DNI propietari: ");
+        ret[2] = "12345678P";//ret[2] = in.nextLine(); 
+        
+        return ret;
+    }
+    
+    private boolean matriculaDesconeguda(String matricula) throws SQLException{
+        boolean ret = false;
+        boolean resultat;        
+        resultat = preguntaSN("No s'ha trobat un vehicle amb aquesta matricula, vols crear-lo?");
+              
+        if(resultat){
+            String [] infoV;
+            
+            infoV = demanarCampsVehicle();
+            
+            if(V.insertarVehicle(matricula,infoV) == 1){
+                System.out.println("Vehicle insertat amb èxit \n\n\n");
+            }else{
+                throw new SQLException("Error en l'inserció d'un vehicle");
+            }
+            System.out.println("\n\n");
+            ret = true;
+        }
+        return ret;
+    }
+    
+    private void demanarVehicle() throws SQLException{
+        String [] info;
+        
         System.out.println("\n");
         System.out.println("Vehicles");
         System.out.println("--------");
         System.out.print("Matricula> ");
-        String matricula = "111222X";
-        v.mostraVehicle(matricula);
-        //in.nextLine();   
+        String matricula = "11122X";
+        //in.nextLine();
+        
+        if(V.consultaVehicle(matricula)){
+            if(preguntaSN("Vols modificar l'informació del vehicle? (s/n)")){
+                info = demanarCampsVehicle();
+                V.modificarVehicle(matricula,info);
+            }
+            else
+                in.nextLine();
+        }
+        else{
+            matriculaDesconeguda(matricula);
+        }
     }
+    
+    private boolean demanarInfoPropietari(String dni) throws SQLException{
+        ResultSet rs = P.consultaInfo(dni);
+        if(rs.next()){
+            System.out.println(
+                    rs.getString("dni") + " - " +
+                    rs.getString("cognoms") + ", " +
+                    rs.getString("nom") + " - "+
+                    rs.getString("telefon") + "\n" +
+                    rs.getString("adreça")
+            );
+            return true;
+        }
+        else
+            return false;
+    }
+     /*  Retorna un array amb l'informació passada
+        0 - Nom; 1 - Cognoms; 2 - Data Naixement; 3 - Adreça; 4 - Telefon
+    */
+    private String[] demanarCampsPropietari(){
+        String[] ret = new String [5];
+        
+        System.out.println("Introdueix el nom del propietari: ");
+        ret[0] = in.nextLine();
+        System.out.println("Cognoms: ");
+        ret[1] = in.nextLine();
+        System.out.println("Data naixement: ");
+        ret[2] = in.nextLine(); 
+        System.out.println("Adreça: ");
+        ret[3] = in.nextLine();
+        System.out.println("Telefon: ");
+        ret[4] = in.nextLine();
+        return ret;
+    }
+    
+    private boolean propietariDesconegut(String dni) throws SQLException{
+        boolean ret = false;
+        boolean resultat;        
+        resultat = preguntaSN("No s'ha trobat un propietari amb aquesta matricula, vols crear-lo?");
+              
+        if(resultat){
+            String [] infoP;
+            
+            infoP = demanarCampsPropietari();
+            
+            if(P.insertarPropietari(dni,infoP) == 1){
+                System.out.println("Propietari insertat amb èxit \n\n\n");
+            }else{
+                throw new SQLException("Error en l'inserció d'un propietari");
+            }
+            System.out.println("\n\n");
+            ret = true;
+        }
+        return ret;
+    }
+    
+    private void demanarPropietari() throws SQLException{
+        System.out.println("\n");
+        System.out.println("Propietaris");
+        System.out.println("--------");
+        System.out.print("DNI> ");
+        String dni = "12345678P";
+        
+        String [] infoP;
+        if(demanarInfoPropietari(dni)){
+            P.consultaEntrades(dni);
+            if(preguntaSN("Vols modificar l'informació del propietari? (s/n)")){
+                infoP = demanarCampsPropietari();
+                P.modificarPropietari(dni,infoP);
+            }
+        }
+        else{
+            propietariDesconegut(dni);
+        }
+    }
+    
+    
     
     private void menuEntrades(){
         int opcio = 0;
         Scanner dades = new Scanner(System.in);
         do {
-            
             System.out.println("\nMenú d’entrades i sortides");
             System.out.println("\n--------------------------");
             System.out.println("\nOperari: "+ nomOperari);
